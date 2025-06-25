@@ -17,13 +17,38 @@ app.get('/livros', (req, res) => {
   res.status(200).json(livros);
 });
 
+app.get('/livros/:id', (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  const livro = livros.find(l => l.id === id);
+
+  if (livro) {
+    res.status(200).json(livro);
+  } else {
+    res.status(404).send('Livro não encontrado');
+  }
+
+});
+
 app.post('/livros', (req, res) => {
   const novoLivro = {
     id: livros.length + 1,
     titulo: req.body.titulo
   };
+
   livros.push(novoLivro);
   res.status(201).json(novoLivro);
+});
+
+app.put('/livros/:id', (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  const livro = livros.find(l => l.id === id);
+
+  if (livro) {
+    livro.titulo = req.body.titulo;
+    res.status(200).json(livro);
+  } else {
+    res.status(404).send('Livro não encontrado');
+  }
 });
 
 export default app;
