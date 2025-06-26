@@ -7,19 +7,19 @@ class LivroController {
         try {
             const livros = await livro.find();
             res.status(200).json(livros);
-        } catch (err) {
-            res.status(500).json({ error: 'Erro ao buscar livros.' });
+        } catch (e) {
+            res.status(500).json({ message: `${e.message} - Erro ao buscar os livros.` });
         }
     }
 
-    // Buscar um livro por ID
-    static async buscarLivroPorId(req, res) {
+    // Listar um livro por ID
+    static async listarLivroPorId(req, res) {
         try {
             const livroEncontrado = await livro.findById(req.params.id);
             if (!livroEncontrado) return res.status(404).json({ error: 'Livro não encontrado.' });
             res.status(200).json(livroEncontrado);
-        } catch (err) {
-            res.status(500).json({ error: 'Erro ao buscar livro.' });
+        } catch (e) {
+            res.status(500).json({ message: `${e.message} - Erro ao buscar o livro.` });
         }
     }
 
@@ -28,19 +28,19 @@ class LivroController {
         try {
             const novoLivro = await livro.create(req.body);
             res.status(201).json({ message: 'Livro criado com sucesso.', livro: novoLivro });
-        } catch (err) {
-            res.status(500).json({ message: `${err.message} - Erro ao cadastrar um livro.` });
+        } catch (e) {
+            res.status(500).json({ message: `${e.message} - Erro ao cadastrar um livro.` });
         }
     }
 
     // Atualizar um livro existente
     static async atualizarLivro(req, res) {
         try {
-            const livroAtualizado = await livro.findByIdAndUpdate(req.params.id, req.body, { new: true });
+            const livroAtualizado = await livro.findByIdAndUpdate(req.params.id, req.body);
             if (!livroAtualizado) return res.status(404).json({ error: 'Livro não encontrado.' });
-            res.json(livroAtualizado);
-        } catch (err) {
-            res.status(500).json({ message: `${err.message} - Erro ao atualizar livro.` });
+            res.status(200).json({ message: 'Livro atualizado com sucesso.'});
+        } catch (e) {
+            res.status(500).json({ message: `${e.message} - Erro ao atualizar o livro.` });
         }
     }
 
@@ -49,9 +49,9 @@ class LivroController {
         try {
             const livroDeletado = await livro.findByIdAndDelete(req.params.id);
             if (!livroDeletado) return res.status(404).json({ error: 'Livro não encontrado.' });
-            res.json({ message: 'Livro deletado com sucesso.' });
-        } catch (err) {
-            res.status(500).json({ error: 'Erro ao deletar livro.' });
+            res.status(200).json({ message: 'Livro deletado com sucesso.' });
+        } catch (e) {
+            res.status(500).json({ message: `${e.message} - Erro no servidor ao deletar o livro.` });
         }
     }
 }
