@@ -26,9 +26,7 @@ const livroSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    autor: {
-      autorSchema // Referenciando o schema de Autor com o Mongoose
-    },
+    autor: autorSchema, // Referenciando o schema de Autor com o Mongoose,
   },
   {
     timestamps: true,
