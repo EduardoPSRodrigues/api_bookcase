@@ -1,3 +1,4 @@
+import { Autor } from '../models/Autor.js';
 import livro from '../models/Livro.js';
 import express from 'express';
 
@@ -25,9 +26,22 @@ class LivroController {
 
     // Criar um novo livro
     static async cadastrarLivro(req, res) {
+        const novoLivro = req.body;
+
+        // Verifica se o autor foi enviado no corpo da requisição
+        // if (!novoLivro.autor) {
+        //     return res.status(400).json({ error: 'Autor não informado.' });
+        // }
+
         try {
-            const novoLivro = await livro.create(req.body);
-            res.status(201).json({ message: 'Livro criado com sucesso.', livro: novoLivro });
+            const autorEncontrado = await Autor.findById(novoLivro.autor);
+
+            const livroCompleto = { ...novoLivro, autor: autorEncontrado }; // Não é necessário usar _doc aqui, pois o Mongoose já retorna o objeto do autor
+            // const livroCompleto = { ...novoLivro, autor: { ...autorEncontrado._doc} }; // Usando _doc para obter o objeto do autor
+
+            const livroCriado = await livro.create(livroCompleto);
+
+            res.status(201).json({ message: 'Livro criado com sucesso.', livro: livroCriado });
         } catch (e) {
             res.status(500).json({ message: `${e.message} - Erro ao cadastrar um livro.` });
         }
