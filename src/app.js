@@ -1,6 +1,6 @@
 import express from "express";
 import conectarBancoDeDados from "./config/dbConnect.js";
-import livro from "./models/Livro.js";
+import routes from "./routes/index.js";
 
 const conexao = await conectarBancoDeDados(); // Conectar ao banco de dados MongoDB Atlas
 
@@ -13,16 +13,7 @@ conexao.on("error", (error) => {
 });
 
 const app = express();
-app.use(express.json()); // Middleware para converter/parsear a string em JSON
-
-app.get("/", (req, res) => {
-  res.status(200).send("Curso de Express.js Funcionando");
-});
-
-app.get("/livros", async (req, res) => {
-  const listarLivros = await livro.find({}); // Buscar todos os livros no banco de dados
-  res.status(200).json(listarLivros);
-});
+routes(app); // Configurar as rotas
 
 // app.get("/livros/:id", async (req, res) => {
 //   const id = req.params.id;
