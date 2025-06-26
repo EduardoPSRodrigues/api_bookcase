@@ -68,6 +68,19 @@ class LivroController {
             res.status(500).json({ message: `${e.message} - Erro no servidor ao deletar o livro.` });
         }
     }
+
+    // Listar livros por editora
+    static async listarLivrosPorEditora(req, res) {
+        const editora = req.query.editora; // Usando query string para buscar por editora ?query=nomeDaEditora
+
+        try {
+            const livrosPorEditora = await livro.find({ editora: editora });
+            res.status(200).json(livrosPorEditora);
+        } catch (e) {
+            res.status(500).json({ message: `${e.message} - Erro ao buscar os livros por editora.` });
+        }
+    }
+
 }
 
 export default LivroController;
