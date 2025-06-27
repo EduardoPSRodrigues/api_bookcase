@@ -1,5 +1,5 @@
-import mongoose from "mongoose";
-import { autorSchema } from "./Autor.js"; // Importando o schema de Autor
+import mongoose from 'mongoose';
+import { autorSchema } from './Autor.js'; // Importando o schema de Autor
 
 // Schema com propriedades do objeto livro e suas validações
 
@@ -34,7 +34,7 @@ const livroSchema = new mongoose.Schema(
   }
 );
 
-const livro = mongoose.model("livros", livroSchema);
+const livro = mongoose.model('livros', livroSchema);
 
 export default livro;
 
