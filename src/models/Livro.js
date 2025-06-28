@@ -1,5 +1,5 @@
-import mongoose from 'mongoose';
-import { autorSchema } from './Autor.js'; // Importando o schema de Autor
+import mongoose from "mongoose";
+import { autorSchema } from "./Autor.js"; // Importando o schema de Autor
 
 // Schema com propriedades do objeto livro e suas validações
 
@@ -10,23 +10,27 @@ const livroSchema = new mongoose.Schema(
     },
     titulo: {
       type: String,
-      required: true,
+      required: [true, "O título do livro é obrigatório."],
       trim: true,
     },
     editora: {
       type: String,
-      required: true,
+      required: [true, "A editora do livro é obrigatória."],
       trim: true,
     },
     preco: {
       type: Number,
-      required: true,
+      required: [true, "O preço do livro é obrigatório."],
     },
     paginas: {
       type: Number,
-      required: true,
+      required: [true, "O número de páginas do livro é obrigatório."],
     },
-    autor: autorSchema, // Referenciando o schema de Autor com o Mongoose,
+    // Referenciando o schema de Autor com o Mongoose
+    autor: {
+      type: autorSchema,
+      required: [true, "O(a) autor(a) do livro é obrigatório."],
+    },
   },
   {
     timestamps: true,
@@ -34,7 +38,7 @@ const livroSchema = new mongoose.Schema(
   }
 );
 
-const livro = mongoose.model('livros', livroSchema);
+const livro = mongoose.model("livros", livroSchema);
 
 export default livro;
 
