@@ -1,3 +1,4 @@
+import NaoEncontrado from "../error/NaoEncontrado.js";
 import { Autor } from "../models/Autor.js";
 
 class AutorController {
@@ -21,7 +22,7 @@ class AutorController {
       if (autorEncontrado !== null) {
         res.status(200).json(autorEncontrado);
       } else {
-        return res.status(404).json({ message: "Autor não encontrado." });
+        next(new NaoEncontrado("Id do Autor não encontrado.")); // Passa o erro 404 para o middleware de tratamento de erros
       }
     } catch (error) {
       next(error); // Passa o erro para o middleware de tratamento de erros
@@ -51,7 +52,7 @@ class AutorController {
         return res.status(404).json({ error: "Autor não encontrado." });
       res.status(200).json({ message: "Autor atualizado com sucesso." });
     } catch (error) {
-      next(error);
+      next(new NaoEncontrado("Id do Autor não encontrado.")); // Passa o erro 404 para o middleware de tratamento de erros
     }
   }
 
@@ -60,7 +61,7 @@ class AutorController {
     try {
       const autorDeletado = await Autor.findByIdAndDelete(req.params.id);
       if (!autorDeletado)
-        return res.status(404).json({ error: "Autor não encontrado." });
+        next(new NaoEncontrado("Id do Autor não encontrado.")); // Passa o erro 404 para o middleware de tratamento de erros
       res.status(200).json({ message: "Autor deletado com sucesso." });
     } catch (error) {
       next(error);

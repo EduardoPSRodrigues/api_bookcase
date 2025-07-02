@@ -1,3 +1,4 @@
+import NaoEncontrado from "../error/NaoEncontrado.js";
 import { Autor } from "../models/Autor.js";
 import livro from "../models/Livro.js";
 
@@ -17,7 +18,7 @@ class LivroController {
     try {
       const livroEncontrado = await livro.findById(req.params.id);
       if (!livroEncontrado)
-        return res.status(404).json({ error: "Livro não encontrado." });
+        return next(new NaoEncontrado("Id do livro não localizado.")); // Passa o erro 404 para o middleware de tratamento de erros
       res.status(200).json(livroEncontrado);
     } catch (error) {
       next(error);
@@ -57,7 +58,7 @@ class LivroController {
         req.body
       );
       if (!livroAtualizado)
-        return res.status(404).json({ error: "Livro não encontrado." });
+        return next(new NaoEncontrado("Id do livro não localizado.")); // Passa o erro 404 para o middleware de tratamento de erros
       res.status(200).json({ message: "Livro atualizado com sucesso." });
     } catch (error) {
       next(error);
@@ -69,7 +70,7 @@ class LivroController {
     try {
       const livroDeletado = await livro.findByIdAndDelete(req.params.id);
       if (!livroDeletado)
-        return res.status(404).json({ error: "Livro não encontrado." });
+        return next(new NaoEncontrado("Id do livro não localizado.")); // Passa o erro 404 para o middleware de tratamento de erros
       res.status(200).json({ message: "Livro deletado com sucesso." });
     } catch (error) {
       next(error);
