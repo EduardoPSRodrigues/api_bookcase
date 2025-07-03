@@ -1,6 +1,6 @@
 import NaoEncontrado from "../error/NaoEncontrado.js";
-import { Autor } from "../models/Autor.js";
-import livro from "../models/Livro.js";
+import { Autor } from "../models/index.js";
+import { livro } from "../models/index.js";
 
 class LivroController {
   // Listar todos os livros
