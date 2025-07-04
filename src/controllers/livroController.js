@@ -1,12 +1,14 @@
 import NaoEncontrado from "../error/NaoEncontrado.js";
-import { Autor } from "../models/index.js";
-import { livro } from "../models/index.js";
+import { Autor, livro } from "../models/index.js";
 
 class LivroController {
   // Listar todos os livros
   static async listarLivros(req, res, next) {
     try {
-      const livros = await livro.find();
+      const livros = await livro.find()
+        .populate("autor")
+        .exec();
+        
       res.status(200).json(livros);
     } catch (error) {
       next(error);
@@ -37,8 +39,7 @@ class LivroController {
     try {
       const autorEncontrado = await Autor.findById(novoLivro.autor);
 
-      const livroCompleto = { ...novoLivro, autor: autorEncontrado }; // Não é necessário usar _doc aqui, pois o Mongoose já retorna o objeto do autor
-      // const livroCompleto = { ...novoLivro, autor: { ...autorEncontrado._doc} }; // Usando _doc para obter o objeto do autor
+      const livroCompleto = { ...novoLivro, autor: autorEncontrado?._id };
 
       const livroCriado = await livro.create(livroCompleto);
 
@@ -78,16 +79,54 @@ class LivroController {
   }
 
   // Listar livros por editora
-  static async listarLivrosPorEditora(req, res, next) {
-    const editora = req.query.editora; // Usando query string para buscar por editora ?query=nomeDaEditora
-
+  static async listarLivrosPorFiltro(req, res, next) {
     try {
-      const livrosPorEditora = await livro.find({ editora: editora });
-      res.status(200).json(livrosPorEditora);
+      const busca = await processaBusca(req.query);
+
+      if (busca !== null) {
+        const livrosResultado  = await livro
+          .find(busca)
+          .populate("autor"); // Popula o campo autor com o nome do autor
+  
+        res.status(200).json(livrosResultado );
+      } else {
+        // Se nenhum autor for encontrado, retorna um erro 404
+        return next(new NaoEncontrado("Nenhum autor encontrado com o nome fornecido."));
+      }
+
     } catch (error) {
       next(error);
     }
   }
+}
+
+async function processaBusca(parametros) {
+  const { editora, titulo, minPaginas, maxPaginas, nomeAutor } = parametros; // Usando query string para buscar por editora e titulo ?query=nomeDaEditora
+
+  let busca = {};
+
+  // Usando regex para busca parcial e o option "i" para tornar a busca case-insensitive
+  if (editora) busca.editora = { $regex: editora, $options: "i" }; 
+  if (titulo) busca.titulo = { $regex: titulo, $options: "i" };
+
+  if (minPaginas || maxPaginas) busca.paginas = {}; // Inicializa o objeto paginas se houver min ou max
+  if (minPaginas) busca.paginas.$gte = minPaginas; // Maior ou igual a minPaginas
+  if (maxPaginas) busca.paginas.$lte = maxPaginas; // Menor ou igual a maxPaginas
+
+  if (nomeAutor) {
+    const autor = await Autor.findOne({ nome: { $regex: nomeAutor, $options: "i" } });
+
+    if (autor !== null) {
+      // Se o autor for encontrado, adiciona o ID do autor à busca
+      busca.autor = autor._id;
+    }
+    else {
+      // Se nenhum autor for encontrado, busca impossível
+      busca = null;
+    }
+  }
+
+  return busca;
 }
 
 export default LivroController;
