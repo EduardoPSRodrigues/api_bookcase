@@ -1,8 +1,6 @@
 import mongoose from "mongoose";
-import { autorSchema } from "./Autor.js"; // Importando o schema de Autor
 
 // Schema com propriedades do objeto livro e suas validações
-
 const livroSchema = new mongoose.Schema(
   {
     id: {
@@ -48,9 +46,9 @@ const livroSchema = new mongoose.Schema(
           `O número de páginas deve estar entre 10 e 5000. Valor fornecido: ${props.value}`,
       },
     },
-    // Referenciando o schema de Autor com o Mongoose
     autor: {
-      type: autorSchema,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "autores",
       required: [true, "O(a) autor(a) do livro é obrigatório."],
     },
   },
